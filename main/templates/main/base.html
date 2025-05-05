@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock title %}</title>
+
+    <link rel="stylesheet" href="{% static 'bootstrap\css\bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+</head>
+<body>
+    <header class="header sticky-top">
+        <div class="header-container d-flex">
+            <navbar class="header-nav pt-4">
+                <ul class="header-list d-flex align-items-center m-0 p-0">
+                  <li><a href="/" class="nav-a mx-3">Home</a></li>
+                  <li><a href="/shop" class="nav-a mx-3">Shop</a></li>
+                  <li><a href="/about" class="nav-a mx-3">About</a></li>
+                  <li><a href="/news" class="nav-a mx-3">News</a></li>
+                  <li><a href="/dict" class="nav-a mx-3">Dict</a></li>
+                  <li><a href="/contacts" class="nav-a mx-3" >Contacts</a></li> 
+                  <li><a href="/vacancies" style="margin-right: 300px;">Vacancies</a></li>
+                  <li><a href="/reviews" class="nav-a mx-3">Reviews</a></li>
+                  <li><a href="/promocodes" class="nav-a mx-3">Codes</a></li>
+                  <li><a href="/statistics" class="nav-a mx-3">Statistics</a></li>
+                </ul>
+              </navbar>
+            <a href="/"><img src="{% static 'img/heavyauranonfone.png' %}" alt="" class="heavy"
+                style="position: fixed; top: -1%; left: 50%; transform: translateX(-50%) scale(0.9);"></a>
+            <div class="header-profile" style="margin-top: 20px;">
+                <a href="{% url "cart:cart_detail" %}"><img src="{% static 'img/grob.png' %}" class="grob" alt=""></a>
+                {% if user.is_authenticated %}
+                    <a href="{% url "users:profile" %}">PROFILE</a>
+                {% else %}
+                    <a href="{% url "users:login" %}" class="m-2">LOGIN</a>
+                {% endif %} 
+                <p class="cart-quantity">
+                    {% with cart_quantity=cart|length %}
+                        {% if cart_quantity > 0 %}
+                            {{ cart_quantity }}
+                        {% else %}
+                            0
+                        {% endif %}
+                    {% endwith %}
+                </p>
+            </div> 
+        </div>
+    </header>
+    <div class="container">
+        {% block content %}
+        {% endblock content %}
+    </div>
+
+    <script src="{% static 'bootstrap\js\bootstrap.bundle.min.js' %}"></script>
+
+    <script>
+        const ipElement = document.createElement('div');
+        document.body.append(ipElement);
+    
+        fetch('https://ipinfo.io/json?token=0e7b4cf3f93885')
+            .then(response => { return response.json(); })
+            .then(data => { ipElement.innerHTML = `IP: ${data.ip} , ${data.city}, ${data.country}`; })
+    </script>
+    <script>
+        const factElement = document.createElement('div');
+        document.body.append(factElement);
+    
+        fetch('https://catfact.ninja/fact')
+            .then(response => { return response.json(); })
+            .then(data => { factElement.innerHTML = `Cat Fact: ${data.fact}`; })
+    </script>
+    
+</body>
+</html>
