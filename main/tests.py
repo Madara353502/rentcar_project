@@ -1,25 +1,22 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 from main.models import Product, Category
-from users.models import User  # Импортируем кастомную модель пользователя
+from users.models import User 
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 class ViewsTest(TestCase):
     def setUp(self):
-        # Создаем тестового пользователя через кастомную модель
         self.user = User.objects.create_user(
             username='testuser',
             email='test@example.com',
             password='testpass123'
         )
         
-        # Создаем тестовую категорию
         self.category = Category.objects.create(
             name='Test Category',
             slug='test-category'
         )
         
-        # Создаем тестовый продукт
         self.product = Product.objects.create(
             category=self.category,
             name='Test Product',

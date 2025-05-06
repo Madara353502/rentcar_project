@@ -10,17 +10,6 @@
         <div class="detail-img">
             <img class="detail-image" src="{{ product.image.url }}" alt="product image">
         </div>
-        <script>
-            const images = document.querySelectorAll('.detail-image');
-            const prevBtn = document.querySelector('.prev-btn');
-            const nextBtn = document.querySelector('.next-btn');
-            let currentIndex = 0;
-
-            images[currentIndex].style.display = 'block';
-
-
-        </script>
-
         <div class="detail-description">
             <h2>{{ product.name }}</h2>
             <h3>Category: {{ product.category }}</h3>
