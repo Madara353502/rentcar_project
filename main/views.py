@@ -8,7 +8,7 @@ from orders.models import Product, Order, OrderItem
 from django.contrib.auth.decorators import login_required
 
 def popular_list(request):
-   products = Product.objects.filter(available=True)[:3]
+   products = Product.objects.filter(available=True)[:5]
    return render(request,
                  'main/index/index.html',
                  {'products' : products})
@@ -65,8 +65,8 @@ def reviews(request):
     return render(request, 'main/info/reviews.html')
 
 
-@login_required
 def statistics(request):
+    
     total_sales = Order.objects.filter().aggregate(
         total=Sum(F('items__price') * F('items__quantity'))
     )['total'] or 0
@@ -91,6 +91,29 @@ def statistics(request):
         total_sold=Sum('order_items__quantity'),
         total_revenue=Sum(F('order_items__price') * F('order_items__quantity'))
     ).order_by('-total_revenue')
+
+    total_units = sum(item.get('total_sold', 0) or 0 for item in category_stats) if category_stats else 0
+    total_revenue = sum(item.get('total_revenue', 0) or 0 for item in category_stats) if category_stats else 0
+
+    for category in category_stats:
+        total_sold = category.get('total_sold')
+        unit_percentage = 0
+        if total_units > 0:
+            if total_sold is not None:
+                unit_percentage = (int(total_sold) / total_units * 100)
+            else:
+                unit_percentage = 0
+        category['unit_percentage'] = unit_percentage
+
+        total_revenue_category = category.get('total_revenue')
+        revenue_percentage = 0
+        if total_revenue > 0:
+            if total_revenue_category is not None:
+                revenue_percentage = (int(total_revenue_category) / total_revenue * 100)
+            else:
+                revenue_percentage = 0
+        category['revenue_percentage'] = revenue_percentage
+
     
     context = {
         'total_sales': total_sales,
@@ -98,7 +121,9 @@ def statistics(request):
         'avg_order': avg_order,
         'top_products': top_products,
         'profitable_products': profitable_products,
-        'category_stats': category_stats,
+        'category_stats': list(category_stats),
+        'total_units': total_units,
+        'total_revenue': total_revenue,
     }
     
     return render(request, 'main/info/statistics.html', context)
