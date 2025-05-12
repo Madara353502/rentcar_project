@@ -1,6 +1,8 @@
 from django.db import models
+
 from main.models import Product
 from users.models import User 
+
 
 class Order(models.Model):
    user = models.ForeignKey(to=User, on_delete=models.SET_DEFAULT,

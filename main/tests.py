@@ -4,6 +4,7 @@ from main.models import Product, Category
 from users.models import User 
 from django.core.files.uploadedfile import SimpleUploadedFile
 
+
 class ViewsTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(

@@ -4,6 +4,7 @@ from main.models import Product, Category
 from cart.cart import Cart
 from decimal import Decimal
 
+
 class SimpleCartTest(TestCase):
     def setUp(self):
         self.category = Category.objects.create(

@@ -1,18 +1,17 @@
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm, \
-    UserCreationForm, UserChangeForm
-from .models import User
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm
+
+from .models import User, UserTimezone, UserNote, UserGroup
 
 
 class UserLoginForm(AuthenticationForm):
     username = forms.CharField()
     password = forms.CharField()
-    
-    
+
     class Meta:
         model = User
         fields = ['username', 'password']
-        
+
 
 class UserRegistrationForm(UserCreationForm):
     class Meta:
@@ -22,18 +21,13 @@ class UserRegistrationForm(UserCreationForm):
             'last_name',
             'username',
             'email',
-            'password1',
-            'password2',
         )
-        
-        
-        first_name = forms.CharField()
-        last_name = forms.CharField()
-        username = forms.CharField()
-        email = forms.CharField()
-        password1 = forms.CharField()
-        password2 = forms.CharField()
-        
+
+    first_name = forms.CharField()
+    last_name = forms.CharField()
+    username = forms.CharField()
+    email = forms.CharField()
+
 
 class ProfileForm(UserChangeForm):
     class Meta:
@@ -45,10 +39,27 @@ class ProfileForm(UserChangeForm):
             'username',
             'email',
         )
-    
-    
-        image = forms.ImageField(required=False)
-        first_name = forms.CharField()
-        last_name = forms.CharField()
-        username = forms.CharField()
-        email = forms.CharField()
+
+    image = forms.ImageField(required=False)
+    first_name = forms.CharField()
+    last_name = forms.CharField()
+    username = forms.CharField()
+    email = forms.CharField()
+
+
+class UserTimezoneForm(forms.ModelForm):
+    class Meta:
+        model = UserTimezone
+        fields = ['timezone']
+
+
+class UserNoteForm(forms.ModelForm):
+    class Meta:
+        model = UserNote
+        fields = ['title', 'content']
+
+
+class UserGroupForm(forms.ModelForm):
+    class Meta:
+        model = UserGroup
+        fields = ['name', 'description']

@@ -1,11 +1,13 @@
 from django.test import TestCase, Client
 from django.urls import reverse
+from django.contrib.sessions.middleware import SessionMiddleware
+from django.http import HttpRequest
+
 from main.models import Product, Category
 from users.models import User
 from orders.models import Order, OrderItem
 from cart.cart import Cart
-from django.contrib.sessions.middleware import SessionMiddleware
-from django.http import HttpRequest
+
 
 class OrderModelTest(TestCase):
     def setUp(self):

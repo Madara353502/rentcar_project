@@ -1,7 +1,7 @@
 {% extends 'main/base.html' %}
 {% load static %}
 
-{% block title %}Shop{% endblock title %}
+{% block title %}{% if category %}{{ category.name }}{% else %}Products{% endif %} - Shop{% endblock title %}
 
 {% block content %}
     <div class="llist d-flex">
@@ -21,6 +21,34 @@
         <div class="main">
             <div class="main-title">
                 {% if category %}{{ category.name }}{% else %}Products{% endif %}
+            </div>
+            <div class="sorting-searching d-flex justify-content-between mb-3">
+                <div class="sorting">
+                    <label for="sort_by">Sort by:</label>
+                    <select id="sort_by" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
+                        <option value="{% url 'main:product_list' %}?sort=name" {% if sort_by == 'name' %}selected{% endif %}>Name</option>
+                        <option value="{% url 'main:product_list' %}?sort=price_asc" {% if sort_by == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="{% url 'main:product_list' %}?sort=price_desc" {% if sort_by == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+                    </select>
+                    {% if category %}
+                        <script>
+                            document.getElementById('sort_by').querySelectorAll('option').forEach(option => {
+                                const value = option.getAttribute('value');
+                                option.setAttribute('value', `${value}&category_slug={{ category.slug }}`);
+                            });
+                        </script>
+                    {% endif %}
+                </div>
+                <div class="searching">
+                    <form method="get" action="{% url 'main:product_list' %}">
+                        <input type="text" name="q" placeholder="Search products..." value="{{ query|default:'' }}">
+                        <button type="submit">Search</button>
+                        {% if category %}
+                            <input type="hidden" name="category_slug" value="{{ category.slug }}">
+                        {% endif %}
+                        <input type="hidden" name="sort" value="{{ sort_by|default:'name' }}">
+                    </form>
+                </div>
             </div>
             <div class="product-list">
                 <div class="items">

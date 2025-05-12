@@ -90,18 +90,37 @@ DATABASES = {
 
 LOGGING = {
     'version': 1,
+    'disable_existing_loggers': False,
     'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': 'debug.log',
+            'filename': 'debug_LOL.log',
+            'formatter': 'simpleFormatter'
+        },
+    },
+    'formatters': {
+        'simpleFormatter': {
+            'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
         },
     },
     'loggers': {
         'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'heavyshop': {  
             'handlers': ['file'],
             'level': 'DEBUG',
-            'propagate': True,
+            'propagate': False,
+        },
+        '': {
+            'handlers': ['console'],
+            'level': 'WARNING',
         },
     },
 }
