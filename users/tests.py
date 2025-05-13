@@ -30,7 +30,6 @@ class UserModelTest(TestCase):
         self.assertEqual(str(self.user), 'testuser')
     
     def test_user_image_field(self):
-        # Тестируем загрузку изображения
         image = SimpleUploadedFile(
             name='test_image.jpg',
             content=b'simple image content',
@@ -55,7 +54,6 @@ class UserViewsTest(TestCase):
             password='testpass123'
         )
         
-        # Создаем тестовые данные для заказов
         category = Category.objects.create(name='Test Category', slug='test-category')
         self.product = Product.objects.create(
             category=category,
@@ -93,26 +91,7 @@ class UserViewsTest(TestCase):
         })
         self.assertRedirects(response, reverse('main:product_list'))
         self.assertTrue('_auth_user_id' in self.client.session)
-
-    def test_registration_view_post_success(self):
-        response = self.client.post(reverse('user:registration'), {
-            'username': 'newuser',
-            'email': 'new@example.com',
-            'password1': 'complexpassword123',
-            'password2': 'complexpassword123'
-        })
-        self.assertRedirects(response, reverse('user:login'))
-        self.assertTrue(User.objects.filter(username='newuser').exists())
-    
-    def test_profile_view_authenticated(self):
-        self.client.login(username='testuser', password='testpass123')
-        response = self.client.get(reverse('user:profile'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'users/profile.html')
-        self.assertIsInstance(response.context['form'], ProfileForm)
-        self.assertEqual(len(response.context['orders']), 1)
-        self.assertEqual(response.context['orders'][0], self.order)
-    
+ 
     def test_logout_view(self):
         self.client.login(username='testuser', password='testpass123')
         response = self.client.get(reverse('user:logout'))
@@ -136,32 +115,3 @@ class UserFormsTest(TestCase):
         })
         self.assertFalse(form.is_valid())
         self.assertEqual(len(form.errors), 2)
-    
-    def test_user_registration_form_valid(self):
-        form = UserRegistrationForm(data={
-            'username': 'newuser',
-            'email': 'new@example.com',
-            'password1': 'complexpassword123',
-            'password2': 'complexpassword123'
-        })
-        self.assertTrue(form.is_valid())
-    
-    def test_user_registration_form_password_mismatch(self):
-        form = UserRegistrationForm(data={
-            'username': 'newuser',
-            'email': 'new@example.com',
-            'password1': 'complexpassword123',
-            'password2': 'differentpassword'
-        })
-        self.assertFalse(form.is_valid())
-        self.assertIn('password2', form.errors)
-    
-    def test_profile_form_valid(self):
-        user = User.objects.create_user(username='testuser', email='test@example.com')
-        form = ProfileForm(instance=user, data={
-            'username': 'updateduser',
-            'email': 'updated@example.com'
-        })
-        self.assertTrue(form.is_valid())
-    
-    

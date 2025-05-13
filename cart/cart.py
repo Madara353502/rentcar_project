@@ -1,7 +1,7 @@
 from decimal import Decimal
 from django.conf import settings
 from main.models import Product
-
+from .forms import CartUpdateProductForm
 
 class Cart:
     def __init__(self, request):
@@ -41,12 +41,11 @@ class Cart:
         cart = self.cart.copy()
         for product in products:
             cart[str(product.id)]['product'] = product
+            cart[str(product.id)]['update_quantity_form'] = CartUpdateProductForm(
+                initial={'quantity': cart[str(product.id)]['quantity'], 'override': True})
+
         for item in cart.values():
-            item['price'] = Decimal(item['price'])
-            item['total_price'] = format((Decimal(item['price']) - (Decimal(item['price']) \
-            * Decimal(item['product'].discount / 100))) * item['quantity'], '.2f')
             yield item
-            
     
     def __len__(self):
         return sum(item['quantity'] for item in self.cart.values())

@@ -144,7 +144,6 @@ def profile(request):
                    'group_form': group_form})
 
 
-
 def logout(request):
     username = request.user.username
     logger.info(f"User '{username}' logged out.")

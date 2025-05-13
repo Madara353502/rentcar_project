@@ -19,8 +19,12 @@
                             <div class="cart-card-name">
                                 <p>{{ product.name }}</p>
                             </div>
-                            <div class="cart-card-q">
-                                <p>Quantity: {{ item.quantity }}</p>
+                             <div class="cart-card-q">
+                                <form action="{% url "cart:cart_update" product.id %}" method="post">
+                                    {% csrf_token %}
+                                    {{ item.update_quantity_form }}
+                                    <label><input type="submit" value="Update" class="update-btn"></label>
+                                </form>
                             </div>
                         </div>
                         <form action="{% url "cart:cart_remove" product.id %}" method="post">
