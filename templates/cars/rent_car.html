@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Book {{ car.car_model.brand.name }} {{ car.car_model.name }} - Car Rental{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">Book {{ car.car_model.brand.name }} {{ car.car_model.name }}</h2>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            {% if car.image %}
+                                <img src="{{ car.image.url }}" class="img-fluid rounded" alt="{{ car.car_model }}">
+                            {% else %}
+                                <div class="bg-light p-5 text-center rounded">
+                                    <i class="fas fa-car fa-5x text-secondary mb-3"></i>
+                                    <p class="text-muted">No image available</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Car Details</h5>
+                            <ul class="list-unstyled">
+                                <li><strong>Brand:</strong> {{ car.car_model.brand.name }}</li>
+                                <li><strong>Model:</strong> {{ car.car_model.name }}</li>
+                                <li><strong>Year:</strong> {{ car.year }}</li>
+                                <li><strong>Body Type:</strong> {{ car.car_model.body_type.name }}</li>
+                                <li><strong>Location:</strong> {{ car.car_park.name }}</li>
+                                <li><strong>Price per Day:</strong> ${{ car.daily_rental_price }}</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        
+                        <div class="alert alert-info">
+                            <h5>Booking Information:</h5>
+                            <ul>
+                                <li>Minimum rental period is 1 day</li>
+                                <li>Maximum rental period is 30 days</li>
+                                <li>A valid driver's license is required</li>
+                                <li>Full payment is required at pickup</li>
+                                <li>Cancellation is free up to 24 hours before pickup</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">Confirm Booking</button>
+                            <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

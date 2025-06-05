@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}Rental #{{ rental.id }} - Car Rental{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h1 class="card-title mb-4">Rental Details #{{ rental.id }}</h1>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Car Information</h5>
+                            <ul class="list-unstyled">
+                                <li><strong>Car:</strong> {{ rental.car.car_model }}</li>
+                                <li><strong>License Plate:</strong> {{ rental.car.license_plate }}</li>
+                                <li><strong>Car Park:</strong> {{ rental.car.car_park }}</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Rental Information</h5>
+                            <ul class="list-unstyled">
+                                <li><strong>Start Date:</strong> {{ rental.start_date|date:"M d, Y" }}</li>
+                                <li><strong>Duration:</strong> {{ rental.days }} days</li>
+                                <li><strong>Expected Return:</strong> {{ rental.expected_return_date|date:"M d, Y" }}</li>
+                                {% if rental.actual_return_date %}
+                                    <li><strong>Actual Return:</strong> {{ rental.actual_return_date|date:"M d, Y" }}</li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h5>Client Information</h5>
+                            <ul class="list-unstyled">
+                                <li><strong>Name:</strong> {{ rental.client.user.get_full_name }}</li>
+                                <li><strong>Phone:</strong> {{ rental.client.phone }}</li>
+                                <li><strong>Address:</strong> {{ rental.client.address }}</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Price Breakdown</h5>
+                            <ul class="list-unstyled">
+                                <li><strong>Base Price:</strong> ${{ rental.base_price }}</li>
+                                {% if rental.discount %}
+                                    <li><strong>Discount:</strong> -${{ rental.discount_amount }}</li>
+                                {% endif %}
+                                {% if rental.total_penalties > 0 %}
+                                    <li><strong>Penalties:</strong> ${{ rental.total_penalties }}</li>
+                                {% endif %}
+                                <li><strong class="text-primary">Final Price:</strong> ${{ rental.final_price }}</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    {% if rental.penalties.exists %}
+                        <div class="mt-4">
+                            <h5>Penalties</h5>
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Amount</th>
+                                        <th>Date</th>
+                                        <th>Notes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for penalty in rental.rentalpenalty_set.all %}
+                                        <tr>
+                                            <td>{{ penalty.penalty.name }}</td>
+                                            <td>${{ penalty.penalty.amount }}</td>
+                                            <td>{{ penalty.date_applied|date:"M d, Y" }}</td>
+                                            <td>{{ penalty.notes|default:"-" }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+
+                    <div class="mt-4">
+                        <h5>Status</h5>
+                        <p>
+                            {% if rental.status == 'P' %}
+                                <span class="badge bg-warning">Pending</span>
+                            {% elif rental.status == 'A' %}
+                                <span class="badge bg-success">Active</span>
+                            {% elif rental.status == 'C' %}
+                                <span class="badge bg-info">Completed</span>
+                            {% elif rental.status == 'X' %}
+                                <span class="badge bg-danger">Cancelled</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Actions</h5>
+                    {% if rental.status == 'P' %}
+                        <form method="post" action="{% url 'cancel_rental' rental.id %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Cancel Rental</button>
+                        </form>
+                    {% endif %}
+                    
+                    {% if user.is_staff %}
+                        {% if rental.status == 'P' %}
+                            <form method="post" action="{% url 'approve_rental' rental.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success">Approve Rental</button>
+                            </form>
+                        {% elif rental.status == 'A' %}
+                            <form method="post" action="{% url 'complete_rental' rental.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary">Mark as Completed</button>
+                            </form>
+                            <a href="{% url 'add_penalty' rental.id %}" class="btn btn-warning mt-2">Add Penalty</a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us - Car Rental{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <h1 class="mb-4">About Our Company</h1>
+            
+            {% if company_info %}
+                {% if company_info.logo %}
+                    <div class="text-center mb-4">
+                        <img src="{{ company_info.logo.url }}" alt="Company Logo" class="img-fluid" style="max-height: 200px;">
+                    </div>
+                {% endif %}
+
+                <div class="mb-4">
+                    {{ company_info.history|linebreaks }}
+                </div>
+
+                {% if company_info.video_url %}
+                    <div class="ratio ratio-16x9 mb-4">
+                        <iframe src="{{ company_info.video_url }}" allowfullscreen></iframe>
+                    </div>
+                {% endif %}
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">Company Details</h3>
+                    </div>
+                    <div class="card-body">
+                        {{ company_info.bank_details|linebreaks }}
+                    </div>
+                </div>
+            {% else %}
+                <p>Company information is currently being updated. Please check back later.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

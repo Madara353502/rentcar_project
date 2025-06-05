@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Promotions and Discounts - Car Rental{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Promotions and Discounts</h1>
+
+    {% if active_promos %}
+        <h2 class="h4 mb-4">Active Promotions</h2>
+        <div class="row mb-5">
+            {% for promo in active_promos %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 border-success">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="card-title mb-0">{{ promo.code }}</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">{{ promo.description }}</p>
+                            <p class="text-success fw-bold mb-0">
+                                Save {{ promo.discount_percent }}%
+                            </p>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <small class="text-muted">
+                                Valid until {{ promo.valid_until|date:"F j, Y" }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if archived_promos %}
+        <h2 class="h4 mb-4">Past Promotions</h2>
+        <div class="row">
+            {% for promo in archived_promos %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 bg-light">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">{{ promo.code }}</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">{{ promo.description }}</p>
+                            <p class="text-muted mb-0">
+                                Was {{ promo.discount_percent }}% off
+                            </p>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <small class="text-muted">
+                                Expired on {{ promo.valid_until|date:"F j, Y" }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if not active_promos and not archived_promos %}
+        <div class="alert alert-info">
+            No promotions available at the moment. Check back later for new deals!
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

@@ -1,65 +1,20 @@
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from .models import User
 
-from .models import User, UserTimezone, UserNote, UserGroup
-
-
-class UserLoginForm(AuthenticationForm):
-    username = forms.CharField()
-    password = forms.CharField()
-
-    class Meta:
+class CustomUserCreationForm(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
         model = User
-        fields = ['username', 'password']
+        fields = ('username', 'email', 'first_name', 'last_name', 'phone_number', 'address', 'license_number')
 
-
-class UserRegistrationForm(UserCreationForm):
-    class Meta:
+class CustomUserChangeForm(UserChangeForm):
+    class Meta(UserChangeForm.Meta):
         model = User
-        fields = (
-            'first_name',
-            'last_name',
-            'username',
-            'email',
-        )
-
-    first_name = forms.CharField()
-    last_name = forms.CharField()
-    username = forms.CharField()
-    email = forms.CharField()
-
-
-class ProfileForm(UserChangeForm):
-    class Meta:
-        model = User
-        fields = (
-            'image',
-            'first_name',
-            'last_name',
-            'username',
-            'email',
-        )
-
-    image = forms.ImageField(required=False)
-    first_name = forms.CharField()
-    last_name = forms.CharField()
-    username = forms.CharField()
-    email = forms.CharField()
-
-
-class UserTimezoneForm(forms.ModelForm):
-    class Meta:
-        model = UserTimezone
-        fields = ['timezone']
-
-
-class UserNoteForm(forms.ModelForm):
-    class Meta:
-        model = UserNote
-        fields = ['title', 'content']
-
-
-class UserGroupForm(forms.ModelForm):
-    class Meta:
-        model = UserGroup
-        fields = ['name', 'description']
+        fields = ('username', 'email', 'first_name', 'last_name', 'phone_number', 'address', 'license_number', 'timezone')
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['timezone'].widget.attrs.update({
+            'class': 'form-select',
+            'data-live-search': 'true'
+        }) 

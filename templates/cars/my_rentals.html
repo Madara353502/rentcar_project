@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}My Rentals - Car Rental{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">My Rentals</h1>
+
+    {% if rentals %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Car</th>
+                        <th>Start Date</th>
+                        <th>Duration</th>
+                        <th>Status</th>
+                        <th>Total Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rental in rentals %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'car_detail' rental.car.id %}">
+                                    {{ rental.car.car_model }}
+                                </a>
+                            </td>
+                            <td>{{ rental.start_date|date:"M d, Y" }}</td>
+                            <td>{{ rental.days }} days</td>
+                            <td>
+                                {% if rental.status == 'P' %}
+                                    <span class="badge bg-warning">Pending</span>
+                                {% elif rental.status == 'A' %}
+                                    <span class="badge bg-success">Active</span>
+                                {% elif rental.status == 'C' %}
+                                    <span class="badge bg-info">Completed</span>
+                                {% elif rental.status == 'X' %}
+                                    <span class="badge bg-danger">Cancelled</span>
+                                {% endif %}
+                            </td>
+                            <td>${{ rental.final_price }}</td>
+                            <td>
+                                <a href="{% url 'rental_detail' rental.id %}" class="btn btn-sm btn-primary">View Details</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <p>You haven't made any rentals yet.</p>
+            <a href="{% url 'car_list' %}" class="btn btn-primary mt-2">Browse Cars</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

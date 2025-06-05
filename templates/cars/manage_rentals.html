@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Rentals - Car Rental{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Manage Rentals</h1>
+
+    <!-- Rentals Section -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3 class="card-title mb-0">Rentals</h3>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <form method="get" class="d-flex gap-2">
+                        <input type="text" name="search" class="form-control" placeholder="Search rentals..." value="{{ search_query }}">
+                        <select name="status" class="form-select" style="width: auto;">
+                            <option value="">All Statuses</option>
+                            <option value="P" {% if status_filter == 'P' %}selected{% endif %}>Pending</option>
+                            <option value="A" {% if status_filter == 'A' %}selected{% endif %}>Active</option>
+                            <option value="C" {% if status_filter == 'C' %}selected{% endif %}>Completed</option>
+                            <option value="X" {% if status_filter == 'X' %}selected{% endif %}>Cancelled</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                    </form>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="btn-group">
+                        <a href="?sort=created_at" class="btn btn-outline-secondary {% if current_sort == 'created_at' %}active{% endif %}">Oldest</a>
+                        <a href="?sort=-created_at" class="btn btn-outline-secondary {% if current_sort == '-created_at' %}active{% endif %}">Newest</a>
+                    </div>
+                </div>
+            </div>
+
+            {% if rentals %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Client</th>
+                                <th>Car</th>
+                                <th>Start Date</th>
+                                <th>Duration</th>
+                                <th>Status</th>
+                                <th>Price</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rental in rentals %}
+                                <tr>
+                                    <td>#{{ rental.id }}</td>
+                                    <td>{{ rental.client.user.get_full_name }}</td>
+                                    <td>
+                                        <a href="{% url 'car_detail' rental.car.id %}">
+                                            {{ rental.car.car_model }}
+                                        </a>
+                                    </td>
+                                    <td>{{ rental.start_date|date:"M d, Y" }}</td>
+                                    <td>{{ rental.days }} days</td>
+                                    <td>
+                                        {% if rental.status == 'P' %}
+                                            <span class="badge bg-warning">Pending</span>
+                                        {% elif rental.status == 'A' %}
+                                            <span class="badge bg-success">Active</span>
+                                        {% elif rental.status == 'C' %}
+                                            <span class="badge bg-info">Completed</span>
+                                        {% elif rental.status == 'X' %}
+                                            <span class="badge bg-danger">Cancelled</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>${{ rental.final_price }}</td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{% url 'rental_detail' rental.id %}" class="btn btn-sm btn-primary">View</a>
+                                            {% if rental.status == 'P' %}
+                                                <form method="post" action="{% url 'approve_rental' rental.id %}" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                                                </form>
+                                            {% elif rental.status == 'A' %}
+                                                <form method="post" action="{% url 'complete_rental' rental.id %}" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-sm btn-info">Complete</button>
+                                                </form>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {% if rentals.has_other_pages %}
+                    <nav class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if rentals.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ rentals.previous_page_number }}&status={{ status_filter }}&search={{ search_query }}&sort={{ current_sort }}">Previous</a>
+                                </li>
+                            {% endif %}
+
+                            {% for num in rentals.paginator.page_range %}
+                                {% if rentals.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}&status={{ status_filter }}&search={{ search_query }}&sort={{ current_sort }}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if rentals.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ rentals.next_page_number }}&status={{ status_filter }}&search={{ search_query }}&sort={{ current_sort }}">Next</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-info">
+                    No rentals found matching your criteria.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

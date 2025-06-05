@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Profile - Car Rental{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">My Profile</h2>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <a href="/rentals/" class="btn btn-secondary">My Rentals</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {% if user.is_staff %}
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h3 class="mb-0">Staff Actions</h3>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'manage_rentals' %}" class="btn btn-info">Manage Rentals</a>
+                        <a href="{% url 'statistics' %}" class="btn btn-info">View Statistics</a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

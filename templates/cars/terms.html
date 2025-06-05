@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Terms and Definitions - Car Rental{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Terms and Definitions</h1>
+    
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="accordion" id="termsAccordion">
+                {% for term in terms %}
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading{{ term.id }}">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                    data-bs-target="#collapse{{ term.id }}" aria-expanded="false" 
+                                    aria-controls="collapse{{ term.id }}">
+                                {{ term.question }}
+                            </button>
+                        </h2>
+                        <div id="collapse{{ term.id }}" class="accordion-collapse collapse" 
+                             aria-labelledby="heading{{ term.id }}" data-bs-parent="#termsAccordion">
+                            <div class="accordion-body">
+                                {{ term.answer|linebreaks }}
+                                <small class="text-muted d-block mt-2">Added: {{ term.created_at|date:"F j, Y" }}</small>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>No terms have been added yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

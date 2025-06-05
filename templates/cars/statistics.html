@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}Rental Statistics - Car Rental{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Rental Statistics</h1>
+
+    <!-- Date Range Filter -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="start_date" class="form-label">Start Date</label>
+                    <input type="date" class="form-control" id="start_date" name="start_date" 
+                           value="{{ start_date|date:'Y-m-d' }}">
+                </div>
+                <div class="col-md-4">
+                    <label for="end_date" class="form-label">End Date</label>
+                    <input type="date" class="form-control" id="end_date" name="end_date" 
+                           value="{{ end_date|date:'Y-m-d' }}">
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary">Update Statistics</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Summary Cards -->
+        <div class="col-md-4 mb-4">
+            <div class="card bg-primary text-white h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Total Rentals</h5>
+                    <p class="display-4">{{ total_rentals }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Total Revenue</h5>
+                    <p class="display-4">${{ total_revenue|floatformat:2 }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card bg-info text-white h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Average Rental Duration</h5>
+                    <p class="display-4">{{ avg_rental_duration }} days</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Popular Cars Chart -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Most Popular Cars</h5>
+                </div>
+                <div class="card-body">
+                    {% if popular_cars %}
+                        <img src="data:image/png;base64,{{ popular_cars_chart }}" class="img-fluid" alt="Popular Cars Chart">
+                        <div class="table-responsive mt-3">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Car</th>
+                                        <th>Rentals</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for car in popular_cars %}
+                                        <tr>
+                                            <td>
+                                                <a href="{% url 'car_detail' car.id %}">
+                                                    {{ car.car_model.brand.name }} {{ car.car_model.name }}
+                                                </a>
+                                            </td>
+                                            <td>{{ car.rental_count }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No rental data available for this period.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Revenue by Brand Chart -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Revenue by Brand</h5>
+                </div>
+                <div class="card-body">
+                    {% if brand_revenue %}
+                        <img src="data:image/png;base64,{{ brand_revenue_chart }}" class="img-fluid" alt="Revenue by Brand Chart">
+                        <div class="table-responsive mt-3">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Brand</th>
+                                        <th>Revenue</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for brand in brand_revenue %}
+                                        <tr>
+                                            <td>{{ brand.name }}</td>
+                                            <td>${{ brand.revenue|floatformat:2 }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No revenue data available for this period.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

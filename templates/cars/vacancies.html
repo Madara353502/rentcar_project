@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Career Opportunities - Car Rental{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Career Opportunities</h1>
+
+    <div class="row">
+        {% for vacancy in vacancies %}
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ vacancy.title }}</h5>
+                        
+                        {% if vacancy.salary_range %}
+                            <div class="mb-3">
+                                <span class="badge bg-success">Salary: {{ vacancy.salary_range }}</span>
+                            </div>
+                        {% endif %}
+
+                        <h6 class="card-subtitle mb-3">Requirements:</h6>
+                        <div class="card-text mb-4">
+                            {{ vacancy.requirements|linebreaks }}
+                        </div>
+
+                        <h6 class="card-subtitle mb-3">Job Description:</h6>
+                        <div class="card-text">
+                            {{ vacancy.description|linebreaks }}
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">Posted: {{ vacancy.created_at|date:"F j, Y" }}</small>
+                            <a href="mailto:hr@carrental.com?subject=Application for {{ vacancy.title }}" 
+                               class="btn btn-primary">Apply Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col">
+                <div class="alert alert-info">
+                    <h4 class="alert-heading">No Open Positions</h4>
+                    <p>There are currently no open positions. Please check back later for new opportunities.</p>
+                    <hr>
+                    <p class="mb-0">You can also send your CV to our HR department at 
+                        <a href="mailto:hr@carrental.com" class="alert-link">hr@carrental.com</a> 
+                        for future consideration.</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

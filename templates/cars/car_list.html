@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Cars - Car Rental{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Available Cars</h1>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <form method="get" class="d-flex">
+                <input type="text" name="search" class="form-control me-2" placeholder="Search cars..." value="{{ search_query }}">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+        </div>
+        <div class="col-md-6 text-end">
+            <div class="btn-group">
+                <a href="?sort=daily_rental_price{% if show_all %}&show_all=1{% endif %}" class="btn btn-outline-secondary {% if current_sort == 'daily_rental_price' %}active{% endif %}">Price ↑</a>
+                <a href="?sort=-daily_rental_price{% if show_all %}&show_all=1{% endif %}" class="btn btn-outline-secondary {% if current_sort == '-daily_rental_price' %}active{% endif %}">Price ↓</a>
+                <a href="?sort=created_at{% if show_all %}&show_all=1{% endif %}" class="btn btn-outline-secondary {% if current_sort == 'created_at' %}active{% endif %}">Oldest</a>
+                <a href="?sort=-created_at{% if show_all %}&show_all=1{% endif %}" class="btn btn-outline-secondary {% if current_sort == '-created_at' %}active{% endif %}">Newest</a>
+            </div>
+            {% if user.is_authenticated %}
+            <div class="btn-group ms-2">
+                <a href="?show_all=1{% if search_query %}&search={{ search_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}" 
+                   class="btn btn-outline-primary {% if show_all %}active{% endif %}">Show All Cars</a>
+                <a href="?show_all=0{% if search_query %}&search={{ search_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}" 
+                   class="btn btn-outline-primary {% if not show_all %}active{% endif %}">Show Available Only</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if cars %}
+        <div class="row">
+            {% for car in cars %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        {% if car.image %}
+                            <img src="{{ car.image.url }}" class="card-img-top" alt="{{ car.car_model }}">
+                        {% else %}
+                            <div class="bg-light p-4 text-center">
+                                <i class="fas fa-car fa-4x text-secondary"></i>
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ car.car_model.brand.name }} {{ car.car_model.name }}</h5>
+                            <p class="card-text">
+                                <strong>Price:</strong> ${{ car.daily_rental_price }}/day<br>
+                                <strong>Year:</strong> {{ car.year }}<br>
+                                <strong>Body Type:</strong> {{ car.car_model.body_type.name }}<br>
+                                <strong>Location:</strong> {{ car.car_park.name }}<br>
+                                <strong>Status:</strong> 
+                                {% if car.is_available %}
+                                    <span class="badge bg-success">Available</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Not Available</span>
+                                {% endif %}
+                            </p>
+                            <a href="{% url 'car_detail' car.id %}" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if cars.has_other_pages %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if cars.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ cars.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}{% if show_all %}&show_all=1{% endif %}">Previous</a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in cars.paginator.page_range %}
+                        <li class="page-item {% if cars.number == num %}active{% endif %}">
+                            <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}{% if show_all %}&show_all=1{% endif %}">{{ num }}</a>
+                        </li>
+                    {% endfor %}
+
+                    {% if cars.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ cars.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}{% if show_all %}&show_all=1{% endif %}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    {% else %}
+        <div class="alert alert-info">
+            No cars found matching your criteria.
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

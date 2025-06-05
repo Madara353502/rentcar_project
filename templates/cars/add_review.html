@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Write a Review - Car Rental{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <h1 class="mb-4">Write a Review</h1>
+            
+            {% if car %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Reviewing: {{ car.car_model.brand.name }} {{ car.car_model.name }}</h5>
+                    <p class="card-text text-muted">{{ car.year }} - {{ car.license_plate }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="mb-4">
+                    <label class="form-label">Rating</label>
+                    <div class="rating-select">
+                        {% for i in "12345"|make_list %}
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="rating" 
+                                       id="rating{{ i }}" value="{{ i }}" required>
+                                <label class="form-check-label" for="rating{{ i }}">
+                                    {{ i }} Star{% if i != "1" %}s{% endif %}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="review-text" class="form-label">Your Review</label>
+                    <textarea class="form-control" id="review-text" name="text" rows="5" 
+                              placeholder="Share your experience..." required></textarea>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Submit Review</button>
+                    <a href="{% url 'car_detail' car_id=car.id %}" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 
